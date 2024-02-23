@@ -229,10 +229,11 @@
                                             <th class="product-subtotal">Total</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="view-cart-fragment">
                                         <tr class="cart_item" th:each="detail,i:${session.currentCart.details}">
                                             <td class="product-remove">
-                                                <a title="Remove this item" class="remove" href="#">×</a>
+                                                <a title="Remove this item" class="remove" href="#"
+                                                    th:attr="onClick='removeProduct(&quot;${detail.key}&quot;)'">×</a>
                                             </td>
 
                                             <td class="product-thumbnail">
@@ -733,6 +734,14 @@
 
     <!-- Main Script -->
     <script src="js/main.js"></script>
+    <script>
+        removeProduct = (productId) => {
+            var url = '/carts/update?productId=' + productId + '&quantity=0&isReplace=true';
+            $.get(url).done(function (data) {
+                $('#view-cart-fragment').replaceWith(data)
+            });
+        }
+    </script>
 </body>
 
 </html>

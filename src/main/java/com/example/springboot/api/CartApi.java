@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/api/carts")
 public class CartApi {
-    // /api/carts/update?productId=...&quantity=&isReplace=...
+    // /api/carts/update?productId=...&quantity=...&isReplace=...
 
     @Autowired
     private CartService cartService;

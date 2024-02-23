@@ -21,7 +21,7 @@ public class CartServiceImpl implements CartService {
         Products product = productsService.findById(productId);
         HashMap<Long, CartDetailDTO> details = cart.getDetails();
 
-        // Them moi
+        // Thêm mới
         if (!details.containsKey(productId)) {
             CartDetailDTO cartDetailDTO = createNewCartDetail(product, quan);
             details.put(productId, cartDetailDTO);
@@ -29,7 +29,7 @@ public class CartServiceImpl implements CartService {
 
         // Update
         else if (quan > 0) {
-            // Thay the
+            // Thay thế
             if (isReplace) {
 
                 details.get(productId).setQuan(quan);
