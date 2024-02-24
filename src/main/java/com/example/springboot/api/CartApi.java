@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 
 @RestController
-@RequestMapping("/api/carts")
+@RequestMapping("/api/cart")
 public class CartApi {
-    // /api/carts/update?productId=...&quantity=...&isReplace=...
+    // /api/cart/update?productId=...&quantity=...&isReplace=...
 
     @Autowired
     private CartService cartService;
@@ -27,6 +27,11 @@ public class CartApi {
     public ResponseEntity<?> doGetUpdate(@RequestParam("productId") Long productId, @RequestParam("quantity") Integer quantity, @RequestParam("isReplace") Boolean isReplace, HttpSession session) {
         CartDTO currentCart = SessionUtil.getCurrentCart(session);
         cartService.updateCartDetail(currentCart, productId, quantity, isReplace);
+        return ResponseEntity.ok(currentCart);
+    }
+    @GetMapping("/refresh")
+    public ResponseEntity<?> doGetRefreshData(HttpSession session) {
+        CartDTO currentCart = SessionUtil.getCurrentCart(session);
         return ResponseEntity.ok(currentCart);
     }
 }

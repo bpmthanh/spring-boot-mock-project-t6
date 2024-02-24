@@ -31,13 +31,11 @@ public class CartServiceImpl implements CartService {
         else if (quan > 0) {
             // Thay thế
             if (isReplace) {
-
                 details.get(productId).setQuan(quan);
 
             }
             // Cong don
             else {
-
                 Integer currentQuan = details.get(productId).getQuan();
                 Integer newQuan = currentQuan + quan;
                 details.get(productId).setQuan(newQuan);
@@ -76,7 +74,7 @@ public class CartServiceImpl implements CartService {
         if (details != null) {
             for (CartDetailDTO cartDetail : details.values()) {
                 if (cartDetail.getPrice() != null) {
-                    totalPrice += cartDetail.getPrice();
+                    totalPrice += (cartDetail.getPrice()*cartDetail.getQuan());
                 }
             }
         }

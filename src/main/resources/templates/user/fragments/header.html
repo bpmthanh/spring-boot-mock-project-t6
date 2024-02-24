@@ -21,10 +21,10 @@
                 <div class="col-sm-6">
                     <div class="shopping-item">
                         <a th:href="@{/cart}">
-                            Cart - <span class="cart-amunt"
-                                         id="headerTotalPrice" th:text="${#numbers.formatCurrency(session.currentCart.totalPrice)}"></span>
-                            <i class="fa fa-shopping-cart"></i> <span class="product-count"
-                                                                      id="headerTotalQuantity" th:text="${#numbers.formatCurrency(session.currentCart.totalQuan)}"></span></a>
+                            Cart - <span class="cart-amunt" id="headerTotalPrice"
+                                th:text="${#numbers.formatCurrency(session.currentCart.totalPrice)}"></span>
+                            <i class="fa fa-shopping-cart"></i> <span class="product-count" id="headerTotalQuantity"
+                                th:text="${#numbers.formatCurrency(session.currentCart.totalQuan)}"></span></a>
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                         <li th:if="${session.currentUser != null}">
                             <a href="" style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
                                 Welcome, <span th:text="${session.currentUser.userName}"
-                                               style="font-weight: bold;"></span>
+                                    style="font-weight: bold;"></span>
                             </a>
                         </li>
                         <li>

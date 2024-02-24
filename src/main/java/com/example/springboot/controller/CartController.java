@@ -25,11 +25,11 @@ public class CartController {
         return "user/cart";
     }
 
-    // /api/carts/update?productId=...&quantity=...&isReplace=...
+    // /cart/update?productId=...&quantity=...&isReplace=...
     @GetMapping("/update")
     public String doGetUpdate(@RequestParam("productId") Long productId, @RequestParam("quantity") Integer quantity, @RequestParam("isReplace") Boolean isReplace, HttpSession session) {
         CartDTO currentCart = SessionUtil.getCurrentCart(session);
         cartService.updateCartDetail(currentCart, productId, quantity, isReplace);
-        return "user/cart::view-cart-fragment";
+        return "user/cart::#view-cart-fragment";
     }
 }
