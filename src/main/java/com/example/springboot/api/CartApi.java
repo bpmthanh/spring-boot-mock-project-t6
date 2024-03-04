@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,21 +43,23 @@ public class CartApi {
     }
 
     @GetMapping("/checkout")
-    public ResponseEntity<?> doGetCheckout(@RequestParam("address") String address,
-            @RequestParam("phone") String phone, HttpSession session) {
-        Users currentUsers = SessionUtil.getCurrentUser(session);
-        if (ObjectUtils.isEmpty(currentUsers)) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    public ResponseEntity<?> deGetCheckout(@RequestParam("address") String address, @RequestParam("phone") String phone,
+            HttpSession session) {
+        Users currentUser = SessionUtil.getCurrentUser(session);
+        // nếu user chưa đăng nhập ko cho thanh toán
+        if (ObjectUtils.isEmpty(currentUser)) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401 tài khoản chưa được xác thực
         }
-
+        // insert
         CartDTO currentCart = SessionUtil.getCurrentCart(session);
         try {
-            cartService.insert(currentCart, currentUsers, address, phone);
+            cartService.insert(currentCart, currentUser, address, phone);
+            // insert thành công clear giỏ hàng
             session.setAttribute(SessionConstant.CURRENT_CART, new CartDTO());
+            // return thành công 200
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 data sai
         }
     }
-
 }
