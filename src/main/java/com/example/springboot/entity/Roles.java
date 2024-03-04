@@ -22,7 +22,8 @@ public class Roles {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    private String des;
-    @OneToMany(mappedBy = "roles",cascade = CascadeType.ALL)
+    private String description;
+
+    @OneToMany(mappedBy = "roles", cascade = CascadeType.ALL)
     private List<Users> users;
 }

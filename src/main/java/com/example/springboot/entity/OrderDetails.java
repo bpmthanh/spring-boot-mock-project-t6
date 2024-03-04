@@ -12,41 +12,28 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "Products")
+@Table(name = "Order_Details")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Products {
+public class OrderDetails {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    private String name;
-    @Column
     private Integer quantity;
     @Column
     private Double price;
-    @Column
-    private String imgUrl;
-    @Column
-    private String slug;
-    @Column
-    private String description;
-    @Column
-    private Boolean isDeleted;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "typeId")
-    @JsonIgnoreProperties("products")
-    private ProductTypes productType;
+    @JoinColumn(name = "productId")
+    @JsonIgnoreProperties("OrderDetails")
+    private Products products;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "unitId")
-    @JsonIgnoreProperties("products")
-    private UnitTypes unitType;
-
-    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL)
-    private List<OrderDetails> orderDetailsList;
+    @JoinColumn(name = "orderId")
+    @JsonIgnoreProperties("OrderDetails")
+    private Orders orders;
 }

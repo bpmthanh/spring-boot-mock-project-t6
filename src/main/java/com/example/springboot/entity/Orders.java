@@ -25,14 +25,16 @@ public class Orders {
     @Column
     private String address;
     @Column
-    private Long phone;
+    private String phone;
     @Column
     @CreationTimestamp
     private Date createdDate;
-    @ManyToMany(mappedBy = "orders",cascade = CascadeType.ALL)
-    private List<Products> products;
+
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="userId")
-    @JsonIgnoreProperties(value={"applicantions","hibernateLazyInitializer"})
+    @JoinColumn(name = "userId")
+    @JsonIgnoreProperties(value = { "applicantions", "hibernateLazyInitializer" })
     private Users users;
+
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
+    private List<OrderDetails> orderDetailsList;
 }

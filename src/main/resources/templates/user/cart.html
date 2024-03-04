@@ -108,7 +108,7 @@
                             Cart - <span class="cart-amunt" id="headerTotalPrice"
                                 th:text="${#numbers.formatCurrency(session.currentCart.totalPrice)}"></span>
                             <i class="fa fa-shopping-cart"></i> <span class="product-count" id="headerTotalQuantity"
-                                th:text="${#numbers.formatCurrency(session.currentCart.totalQuan)}"></span></a>
+                                th:text="${#numbers.formatCurrency(session.currentCart.totalQuantity)}"></span></a>
                     </div>
                 </div>
             </div>
@@ -255,31 +255,37 @@
 
                                             <td class="product-quantity">
                                                 <div class="quantity buttons_added">
-                                                    <input type="button" class="minus" value="-">
+                                                    <!-- <input type="button" class="minus" value="-"> -->
                                                     <input type="number" size="4" class="input-text qty text"
-                                                        title="Qty" th:value=${detail.value.quan} min="0" step="1">
-                                                    <input type="button" class="plus" value="+">
+                                                        title="Qty" th:value=${detail.value.quantity} min="0" step="1"
+                                                        th:id="quantity+${detail.key}"
+                                                        th:attr="onChange='updateQuantity(\''+${detail.key}+'\')'">
+                                                    <!-- <input type="button" class="plus" value="+"> -->
                                                 </div>
                                             </td>
 
                                             <td class="product-subtotal">
                                                 <span class="amount"
-                                                    th:text="${#numbers.formatCurrency(detail.value.price*detail.value.quan)}"></span>
+                                                    th:text="${#numbers.formatCurrency(detail.value.price*detail.value.quantity)}"></span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="actions" colspan="6">
                                                 <div class="coupon">
-                                                    <label for="coupon_code">Coupon:</label>
-                                                    <input type="text" placeholder="Coupon code" value=""
-                                                        id="coupon_code" class="input-text" name="coupon_code">
-                                                    <input type="submit" value="Apply Coupon" name="apply_coupon"
-                                                        class="button">
+                                                    <label for="address">Address:</label>
+                                                    <input type="text" placeholder="Address" value="" id="address"
+                                                        class="input-text" name="address">
+                                                    <label for="phone_number">Phone:</label>
+                                                    <input type="text" placeholder="Phone number" value=""
+                                                        id="phone_number" class="input-text" name="phone_number">
                                                 </div>
-                                                <input type="submit" value="Update Cart" name="update_cart"
-                                                    class="button">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="12">
                                                 <input type="submit" value="Checkout" name="proceed"
-                                                    class="checkout-button button alt wc-forward">
+                                                    class="checkout-button button alt wc-forward"
+                                                    th:attr="onclick='checkout()'">
                                             </td>
                                         </tr>
                                     </tbody>
@@ -737,8 +743,55 @@
     <!-- Main Script -->
     <script src="js/main.js"></script>
     <script>
+        checkout = () => {
+            var address = $('#address').val();
+            var phone = $('#phone_number').val();
+            var url = '/api/cart/checkout';
+            var data = {
+                address: address,
+                phone: phone
+            };
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: handle200,
+                error: function (xhr, textStatus, errorThrown) {
+                    if (xhr.status === 400) {
+                        handle400();
+                    } else if (xhr.status === 401) {
+                        handle401();
+                    }
+                }
+            });
+        }
+
+        handle200 = () => {
+            alert("Your payment was created successfully!");
+            window.location.href = '/index'
+        }
+
+        handle400 = () => {
+            alert("Checkout failed, please try again!");
+        }
+
+        handle401 = () => {
+            alert("Please login before paying!");
+            window.location.href = '/login'
+        }
+
         removeProduct = (productId) => {
             var url = '/cart/update?productId=' + productId + '&quantity=0&isReplace=true';
+            $.get(url).done(function (data) {
+                $('#view-cart-fragment').replaceWith(data)
+                callAPiRefreshCart();
+            });
+        }
+        updateQuantity = (productId) => {
+            var idInput = '#quantity' + productId;
+            var newQuan = $(idInput).val()
+            var url = '/cart/update?productId=' + productId + '&quantity=' + newQuan + '&isReplace=true';
             $.get(url).done(function (data) {
                 $('#view-cart-fragment').replaceWith(data)
                 callAPiRefreshCart();
@@ -752,7 +805,7 @@
                 dataType: 'json',
                 success: function (data) {
                     $('#headerTotalPrice').text(data.totalPrice.toLocaleString())
-                    $('#headerTotalQuantity').text(data.totalQuan);
+                    $('#headerTotalQuantity').text(data.totalQuantity);
                 },
                 error: function (error) {
                     console.log(error)

@@ -16,7 +16,7 @@ public class RolesServiceImpl implements RolesService {
     private RolesRepo repo;
 
     @Override
-    public Roles findByDes(String des) {
-        return repo.findByDes(RolesConstant.ROLE_USER);
+    public Roles findByDescription(String description) {
+        return repo.findByDescription(RolesConstant.ROLE_USER);
     }
 }

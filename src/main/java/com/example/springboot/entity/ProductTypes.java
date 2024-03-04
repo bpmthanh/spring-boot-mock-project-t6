@@ -19,12 +19,13 @@ public class ProductTypes {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "des")
-    private String des;
+    @Column(name = "description")
+    private String description;
     @Column(name = "slug")
     private String slug;
     @Column(name = "isDeleted")
     private Boolean isDeleted;
-    @OneToMany(mappedBy = "productType",cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "productType", cascade = CascadeType.ALL)
     private List<Products> products;
 }

@@ -20,10 +20,11 @@ public class UnitTypes {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "des")
-    private String des;
+    @Column(name = "description")
+    private String description;
     @Column(name = "isDeleted")
     private Boolean isDeleted;
-    @OneToMany(mappedBy = "unitType",cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "unitType", cascade = CascadeType.ALL)
     private List<Products> products;
 }

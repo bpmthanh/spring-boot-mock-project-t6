@@ -39,8 +39,10 @@ public class Users {
     private String imgUrl;
     @Column(columnDefinition = "boolean default false")
     private Boolean isDeleted;
+
     @OneToMany(mappedBy = "users",cascade = CascadeType.ALL)
     private List<Orders> orders;
+    
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="roleId")
     @JsonIgnoreProperties(value={"applicantions","hibernateLazyInitializer"})

@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = {Throwable.class})
     public Users Save(Users user) throws SQLException {
-        Roles role = rolesService.findByDes(RolesConstant.ROLE_USER);
+        Roles role = rolesService.findByDescription(RolesConstant.ROLE_USER);
         user.setRoles(role);
         user.setIsDeleted(Boolean.FALSE);
         user.setHashPassword(bcrypt.encode(user.getHashPassword()));

@@ -20,4 +20,6 @@ public interface ProductsRepo extends JpaRepository<Products, Long> {
     @Query(value = "SELECT * FROM products WHERE isDeleted = 0 AND quantity > 0", nativeQuery = true)
     List<Products> findAllAvailable();
 
+    @Query(value = "update products set quantity = ?1 where id = ?2", nativeQuery = true)
+    void updateQuantity(Integer newQuantity, Long id);
 }

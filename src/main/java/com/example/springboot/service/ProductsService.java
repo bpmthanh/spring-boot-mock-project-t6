@@ -10,4 +10,5 @@ public interface ProductsService {
     Products findBySlug(String slug);
     List<Products> findAllAvailable();
     List<Products> findByIsDeletedAndQuantityGreaterThan();
+    void updateQuantity(Integer newQuantity, Long id);
 }

@@ -3,12 +3,20 @@ package com.example.springboot.service.impl;
 import com.example.springboot.dto.CartDTO;
 import com.example.springboot.dto.CartDetailDTO;
 import com.example.springboot.entity.Products;
+import com.example.springboot.entity.Users;
+import com.example.springboot.entity.Orders;
 import com.example.springboot.service.CartService;
+import com.example.springboot.service.OrderDetailService;
+import com.example.springboot.service.OrderService;
 import com.example.springboot.service.ProductsService;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+
+import javax.transaction.Transactional;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -16,54 +24,63 @@ public class CartServiceImpl implements CartService {
     @Autowired
     ProductsService productsService;
 
+    @Autowired
+    CartService cartService;
+
+    @Autowired
+    OrderService orderService;
+
+    @Autowired
+    OrderDetailService orderDetailService;
+
     @Override
-    public CartDTO updateCartDetail(CartDTO cart, Long productId, Integer quan, boolean isReplace) {
+    public CartDTO updateCartDetail(CartDTO cart, Long productId, Integer quantity, boolean isReplace) {
         Products product = productsService.findById(productId);
         HashMap<Long, CartDetailDTO> details = cart.getDetails();
 
         // Thêm mới
         if (!details.containsKey(productId)) {
-            CartDetailDTO cartDetailDTO = createNewCartDetail(product, quan);
+            CartDetailDTO cartDetailDTO = createNewCartDetail(product, quantity);
             details.put(productId, cartDetailDTO);
         }
 
         // Update
-        else if (quan > 0) {
+        else if (quantity > 0) {
             // Thay thế
             if (isReplace) {
-                details.get(productId).setQuan(quan);
+                details.get(productId).setQuantity(quantity);
 
             }
             // Cong don
             else {
-                Integer currentQuan = details.get(productId).getQuan();
-                Integer newQuan = currentQuan + quan;
-                details.get(productId).setQuan(newQuan);
+                Integer currentquantity = details.get(productId).getQuantity();
+                Integer newquantity = currentquantity + quantity;
+                details.get(productId).setQuantity(newquantity);
             }
         }
         // Xoa
         else {
             details.remove(productId);
         }
-        cart.setTotalQuan(getTotalQuantity(cart));
+        cart.setTotalQuantity(getTotalQuantity(cart));
         cart.setTotalPrice(getTotalPrice(cart));
         return cart;
     }
 
     @Override
     public Integer getTotalQuantity(CartDTO cart) {
-        Integer totalQuantity = 0;
+        Integer totalquantity = 0;
         HashMap<Long, CartDetailDTO> details = cart.getDetails();
 
         if (details != null) {
             for (CartDetailDTO cartDetail : details.values()) {
-                if (cartDetail.getQuan() != null) {
-                    totalQuantity += cartDetail.getQuan();
+                if (cartDetail.getQuantity() != null) {
+                    totalquantity += cartDetail.getQuantity();
                 }
             }
         }
 
-        return totalQuantity;
+        return totalquantity;
     }
 
     @Override
@@ -74,7 +91,7 @@ public class CartServiceImpl implements CartService {
         if (details != null) {
             for (CartDetailDTO cartDetail : details.values()) {
                 if (cartDetail.getPrice() != null) {
-                    totalPrice += (cartDetail.getPrice()*cartDetail.getQuan());
+                    totalPrice += (cartDetail.getPrice() * cartDetail.getQuantity());
                 }
             }
         }
@@ -82,10 +99,37 @@ public class CartServiceImpl implements CartService {
         return totalPrice;
     }
 
-    private CartDetailDTO createNewCartDetail(Products product, Integer quan) {
+    // Sau này nếu mà bị bug thì bỏ value = TxType đi
+    @Transactional(rollbackOn = { Exception.class })
+    @Override
+    public void insert(CartDTO cartDTO, Users user, String address, String phone) throws Exception {
+        // Insert vào bảng Orders
+        Orders order = new Orders();
+        order.setUsers(user);
+        order.setAddress(address);
+        order.setPhone(phone);
+
+        Orders orderRes = orderService.insert(order);
+        if (ObjectUtils.isEmpty(orderRes)) {
+            throw new Exception("Insert into order table failed!");
+        }
+
+        // Insert vào bảng Order details
+        for (CartDetailDTO cartDetailDTO : cartDTO.getDetails().values()) {
+            cartDetailDTO.setOrderId(orderRes.getId());
+            orderDetailService.insert(cartDetailDTO);
+
+            // Update new quantity cho bằng Products
+            Products product = productsService.findById(cartDetailDTO.getProductId());
+            Integer newquantity = product.getQuantity() - cartDetailDTO.getQuantity();
+            productsService.updateQuantity(newquantity, product.getId());
+        }
+    }
+
+    private CartDetailDTO createNewCartDetail(Products product, Integer quantity) {
         CartDetailDTO cartDetailDTO = new CartDetailDTO();
         cartDetailDTO.setProductId(product.getId());
-        cartDetailDTO.setQuan(quan);
+        cartDetailDTO.setQuantity(quantity);
         cartDetailDTO.setPrice(product.getPrice());
         cartDetailDTO.setImgUrl(product.getImgUrl());
         cartDetailDTO.setSlug(product.getSlug());

@@ -15,8 +15,8 @@ import java.util.HashMap;
 public class CartDTO implements Serializable {
     private Long orderId;
     private String address;
-    private Long phone;
+    private String phone;
     private Double totalPrice = 0D;
-    private Integer totalQuan = 0;
-    private HashMap<Long,CartDetailDTO> details = new HashMap<>();
+    private Integer totalQuantity = 0;
+    private HashMap<Long, CartDetailDTO> details = new HashMap<>();
 }

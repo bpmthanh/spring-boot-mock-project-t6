@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
+
 @Service
 public class ProductsServiceImpl implements ProductsService {
     @Autowired
@@ -34,8 +37,15 @@ public class ProductsServiceImpl implements ProductsService {
     public List<Products> findAllAvailable() {
         return repo.findAllAvailable();
     }
+
     @Override
     public List<Products> findByIsDeletedAndQuantityGreaterThan() {
         return repo.findByIsDeletedAndQuantityGreaterThan(Boolean.FALSE, 0);
+    }
+
+    @Transactional(value = TxType.REQUIRED)
+    @Override
+    public void updateQuantity(Integer newQuantity, Long id) {
+        repo.updateQuantity(newQuantity, id);
     }
 }
